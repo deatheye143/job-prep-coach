@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Job Prep Coach</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header>
+  <div class="brand">Job Prep<span>Coach</span></div>
+  <button id="logoutBtn" class="pill hidden">Logout</button>
+</header>
+
+<section id="loginView" class="login">
+  <h1>Roz thoda-thoda padho, naukri pakki karo.</h1>
+  <div class="card">
+    <h2 id="authTitle">Login karein</h2>
+    <div id="nameField" class="hidden">
+      <label for="name">Naam</label>
+      <input id="name" placeholder="Aapka naam">
+    </div>
+    <label for="phone">Mobile number</label>
+    <input id="phone" type="tel" placeholder="10 digit number" maxlength="10" inputmode="numeric">
+    <label for="password">Password (kam se kam 6 akshar)</label>
+    <input id="password" type="password" placeholder="Password">
+    <button id="authBtn">Login</button>
+    <button id="authSwitch" class="ghost">Naya account banana hai? Yahan dabayein</button>
+    <p id="loginMsg" class="error"></p>
+  </div>
+</section>
+
+<main id="appView" class="hidden">
+  <section id="quizTab" class="tab">
+    <div id="subjectList" class="subjects"></div>
+
+    <div id="chapterBox" class="hidden">
+      <button id="chapBackBtn" class="ghost">Subjects</button>
+      <h2 id="chapTitle"></h2>
+      <div id="chapterList" class="chapters"></div>
+    </div>
+
+    <div id="quizBox" class="hidden">
+      <div class="quizTop">
+        <button id="backBtn" class="round" aria-label="Back">&lsaquo;</button>
+        <span id="subjectName"></span>
+        <span id="timer" class="timer">10:00</span>
+      </div>
+      <div class="progress"><div id="progressBar"></div></div>
+      <p id="qNo" class="qno"></p>
+      <div class="card"><h3 id="qText"></h3></div>
+      <div id="options"></div>
+      <div class="navRow">
+        <button id="prevBtn" class="ghost">Pichla</button>
+        <button id="nextBtn">Agla</button>
+      </div>
+      <button id="submitBtn" class="gold">Submit Score</button>
+    </div>
+
+    <div id="resultBox" class="hidden"></div>
+  </section>
+
+  <section id="mockTab" class="tab hidden">
+    <div class="card">
+      <h2>Mock test</h2>
+      <p class="muted">Sab subjects aur sab chapters ke sawal ek saath, exam jaisa. 1 sawal ke liye 1 minute.</p>
+      <p class="muted">Exam ke baad result dikhega, aur PDF download kar sakte hain.</p>
+      <button id="mockStartBtn" class="gold">Mock test shuru karein</button>
+    </div>
+  </section>
+
+  <section id="chatTab" class="tab hidden">
+    <h2>Doubt box</h2>
+    <p class="muted">Sawal likho, step by step jawab paayo</p>
+    <div id="chatLog" class="chatLog">
+      <div class="bubble bot">Namaste! Koi sawal hai? Likhiye.</div>
+    </div>
+    <div class="chatInput">
+      <input id="chatText" placeholder="Yahan sawal likhein...">
+      <button id="sendChatBtn" class="send" aria-label="Send">&rarr;</button>
+    </div>
+  </section>
+
+  <section id="scoreTab" class="tab hidden">
+    <h2>Scores</h2>
+    <div id="historyList" class="card"></div>
+  </section>
+</main>
+
+<nav id="bottomNav" class="hidden">
+  <button data-tab="quizTab" class="active">Quiz</button>
+  <button data-tab="mockTab">Mock test</button>
+  <button data-tab="chatTab">Doubt box</button>
+  <button data-tab="scoreTab">Scores</button>
+</nav>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
