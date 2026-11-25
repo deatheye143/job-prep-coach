@@ -5,97 +5,173 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Job Prep Coach</title>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+Devanagari:wght@400;600&family=Noto+Sans+Oriya:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/static/style.css">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
-<header>
-  <div class="brand">Job Prep<span>Coach</span></div>
-  <button id="logoutBtn" class="pill hidden">Logout</button>
-</header>
 
-<section id="loginView" class="login">
-  <h1>Roz thoda-thoda padho, naukri pakki karo.</h1>
-  <div class="card">
-    <h2 id="authTitle">Login karein</h2>
-    <div id="nameField" class="hidden">
-      <label for="name">Naam</label>
-      <input id="name" placeholder="Aapka naam">
+<section id="authView" class="auth">
+  <div class="auth-card">
+    <div class="brand">Job Prep <span>Coach</span></div>
+    <p class="tagline">Roz thoda-thoda padho, naukri pakki karo.</p>
+
+    <div id="authLogin">
+      <div id="gWrap">
+        <div id="gBtn" class="gbtn"></div>
+        <div class="divider"><span>ya number se</span></div>
+      </div>
+      <label for="loginPhone">Mobile number</label>
+      <input id="loginPhone" type="tel" placeholder="10 digit number" maxlength="10" inputmode="numeric">
+      <label for="loginPass">Password</label>
+      <input id="loginPass" type="password" placeholder="Password">
+      <button id="loginBtn">Login</button>
+      <button id="gotoForgot" class="link">Password bhul gaye?</button>
+      <button id="gotoSignup" class="ghost">Naya account banayein</button>
     </div>
-    <label for="phone">Mobile number</label>
-    <input id="phone" type="tel" placeholder="10 digit number" maxlength="10" inputmode="numeric">
-    <label for="password">Password (kam se kam 6 akshar)</label>
-    <input id="password" type="password" placeholder="Password">
-    <button id="authBtn">Login</button>
-    <button id="authSwitch" class="ghost">Naya account banana hai? Yahan dabayein</button>
-    <p id="loginMsg" class="error"></p>
+
+    <div id="authSignup" class="hidden">
+      <h2>Naya account</h2>
+      <label for="suName">Naam</label>
+      <input id="suName" placeholder="Aapka naam">
+      <label for="suEmail">Email</label>
+      <input id="suEmail" type="email" placeholder="example@gmail.com">
+      <label for="suPhone">Mobile number</label>
+      <input id="suPhone" type="tel" placeholder="10 digit number" maxlength="10" inputmode="numeric">
+      <label for="suPass">Password (6 akshar ya zyada)</label>
+      <input id="suPass" type="password">
+      <label for="suPass2">Confirm password</label>
+      <input id="suPass2" type="password">
+      <button id="suBtn">OTP bhejein</button>
+      <button id="suBack" class="ghost">Wapas login par</button>
+    </div>
+
+    <div id="authSignupOtp" class="hidden">
+      <h2>OTP verify karein</h2>
+      <p class="muted">6 digit OTP yahan daalein.</p>
+      <label for="suOtp">OTP</label>
+      <input id="suOtp" inputmode="numeric" maxlength="6">
+      <button id="suOtpBtn">Verify karke account banayein</button>
+      <button id="suOtpBack" class="ghost">Wapas</button>
+    </div>
+
+    <div id="authForgot" class="hidden">
+      <h2>Password bhul gaye?</h2>
+      <p class="muted">Account ka number ya email likhein.</p>
+      <label for="fgId">Number ya Email</label>
+      <input id="fgId" placeholder="Number ya email">
+      <button id="fgBtn">OTP bhejein</button>
+      <button id="fgBack" class="ghost">Wapas login par</button>
+    </div>
+
+    <div id="authForgotOtp" class="hidden">
+      <h2>OTP daalein</h2>
+      <label for="fgOtp">OTP</label>
+      <input id="fgOtp" inputmode="numeric" maxlength="6">
+      <button id="fgOtpBtn">OTP check karein</button>
+      <button id="fgOtpBack" class="ghost">Wapas</button>
+    </div>
+
+    <div id="authNewPass" class="hidden">
+      <h2>Naya password</h2>
+      <label for="npPass">New password</label>
+      <input id="npPass" type="password">
+      <label for="npPass2">Confirm new password</label>
+      <input id="npPass2" type="password">
+      <button id="npBtn">Password update karein</button>
+    </div>
+
+    <p id="authNote" class="note hidden"></p>
+    <p id="authMsg" class="error"></p>
   </div>
 </section>
 
-<main id="appView" class="hidden">
-  <section id="quizTab" class="tab">
-    <div id="subjectList" class="subjects"></div>
+<div id="appView" class="hidden">
+  <header class="topbar">
+    <div class="brand">Job Prep <span>Coach</span></div>
+    <div class="who"><span id="who"></span><button id="logoutBtn" class="ghost small">Logout</button></div>
+  </header>
 
-    <div id="chapterBox" class="hidden">
-      <button id="chapBackBtn" class="ghost">Subjects</button>
-      <h2 id="chapTitle"></h2>
-      <div id="chapterList" class="chapters"></div>
-    </div>
+  <main class="main">
+    <section id="quizTab" class="tab">
+      <div id="subjectList" class="grid"></div>
 
-    <div id="quizBox" class="hidden">
-      <div class="quizTop">
-        <button id="backBtn" class="round" aria-label="Back">&lsaquo;</button>
-        <span id="subjectName"></span>
-        <span id="timer" class="timer">10:00</span>
+      <div id="chapterBox" class="hidden">
+        <button id="chapBackBtn" class="ghost small">Subjects</button>
+        <h2 id="chapTitle"></h2>
+        <div id="chapterList"></div>
+        <div id="notesBox" class="card hidden"></div>
       </div>
-      <div class="progress"><div id="progressBar"></div></div>
-      <p id="qNo" class="qno"></p>
-      <div class="card"><h3 id="qText"></h3></div>
-      <div id="options"></div>
-      <div class="navRow">
-        <button id="prevBtn" class="ghost">Pichla</button>
-        <button id="nextBtn">Agla</button>
+
+      <div id="quizBox" class="hidden">
+        <div class="quizTop">
+          <button id="backBtn" class="ghost small">Back</button>
+          <span id="subjectName"></span>
+          <span id="timer" class="timer">10:00</span>
+        </div>
+        <div class="progress"><div id="progressBar"></div></div>
+        <p id="qNo" class="qno"></p>
+        <div class="card"><h3 id="qText"></h3></div>
+        <div id="options"></div>
+        <div class="navRow">
+          <button id="prevBtn" class="ghost">Pichla</button>
+          <button id="nextBtn">Agla</button>
+        </div>
+        <button id="submitBtn" class="gold">Submit</button>
       </div>
-      <button id="submitBtn" class="gold">Submit Score</button>
-    </div>
 
-    <div id="resultBox" class="hidden"></div>
-  </section>
+      <div id="resultBox" class="hidden"></div>
+    </section>
 
-  <section id="mockTab" class="tab hidden">
-    <div class="card">
-      <h2>Mock test</h2>
-      <p class="muted">Sab subjects aur sab chapters ke sawal ek saath, exam jaisa. 1 sawal ke liye 1 minute.</p>
-      <p class="muted">Exam ke baad result dikhega, aur PDF download kar sakte hain.</p>
-      <button id="mockStartBtn" class="gold">Mock test shuru karein</button>
-    </div>
-  </section>
+    <section id="mockTab" class="tab hidden">
+      <div class="card">
+        <h2>Mock test</h2>
+        <p class="muted">Sab subjects aur chapters ke sawal ek saath, exam jaisa. 1 sawal ke liye 1 minute. Ye subscription me hai.</p>
+        <button id="mockStartBtn" class="gold">Mock test shuru karein</button>
+      </div>
+    </section>
 
-  <section id="chatTab" class="tab hidden">
-    <h2>Doubt box</h2>
-    <p class="muted">Sawal likho, step by step jawab paayo</p>
-    <div id="chatLog" class="chatLog">
-      <div class="bubble bot">Namaste! Koi sawal hai? Likhiye.</div>
-    </div>
-    <div class="chatInput">
-      <input id="chatText" placeholder="Yahan sawal likhein...">
-      <button id="sendChatBtn" class="send" aria-label="Send">&rarr;</button>
-    </div>
-  </section>
+    <section id="planTab" class="tab hidden">
+      <div class="card" id="subStatus"></div>
+      <h3>Plan chuniye</h3>
+      <div id="planList"></div>
+      <div class="card">
+        <p class="muted">Niche QR scan karke payment karein. Payment ke baad UTR (transaction ID) yahan likhein.</p>
+        <img id="qrImg" class="qr" alt="Payment QR" src="/api/qr">
+        <p id="qrFallback" class="muted hidden">QR abhi upload nahi hua hai.</p>
+        <label for="utr">UTR / Transaction ID</label>
+        <input id="utr" placeholder="12 digit UTR">
+        <button id="utrBtn">Payment submit karein</button>
+        <p id="planMsg" class="error"></p>
+      </div>
+      <h3>Aapke payments</h3>
+      <div id="payList" class="card"></div>
+    </section>
 
-  <section id="scoreTab" class="tab hidden">
-    <h2>Scores</h2>
-    <div id="historyList" class="card"></div>
-  </section>
-</main>
+    <section id="scoreTab" class="tab hidden">
+      <h2>Mera Dashboard</h2>
+      <div id="historyList" class="card"></div>
+    </section>
+  </main>
 
-<nav id="bottomNav" class="hidden">
-  <button data-tab="quizTab" class="active">Quiz</button>
-  <button data-tab="mockTab">Mock test</button>
-  <button data-tab="chatTab">Doubt box</button>
-  <button data-tab="scoreTab">Scores</button>
-</nav>
+  <nav class="bottomnav">
+    <button data-tab="quizTab" class="active">Quiz</button>
+    <button data-tab="mockTab">Mock test</button>
+    <button data-tab="planTab">Plan</button>
+    <button data-tab="scoreTab">Dashboard</button>
+  </nav>
+</div>
 
+<div id="pdfViewer" class="viewer hidden">
+  <div class="viewer-bar">
+    <button id="pdfClose" class="ghost small">Band karein</button>
+    <span id="pdfTitle"></span>
+    <span class="pager"><button id="pdfPrev" class="ghost small">&lsaquo;</button><b id="pdfInfo"></b><button id="pdfNext" class="ghost small">&rsaquo;</button></span>
+  </div>
+  <div id="pdfPages" class="viewer-body"></div>
+</div>
+<script src="/static/guard.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="/static/app.js"></script>
 </body>
 </html>
