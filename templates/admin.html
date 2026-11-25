@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin - Job Prep Coach</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+Devanagari:wght@400;600&family=Noto+Sans+Oriya:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<section id="aLogin" class="auth">
+  <div class="auth-card">
+    <div class="brand">Job Prep <span>Admin</span></div>
+    <label for="aEmail">Admin email</label>
+    <input id="aEmail" type="email">
+    <label for="aPass">Password</label>
+    <input id="aPass" type="password">
+    <button id="aLoginBtn">Login</button>
+    <p id="aMsg" class="error"></p>
+  </div>
+</section>
+
+<div id="aPanel" class="admin hidden">
+  <aside class="side">
+    <div class="brand">Job Prep <span>Admin</span></div>
+    <nav>
+      <button class="nav active" data-view="ov">Overview</button>
+      <button class="nav" data-view="pay">Payments <b id="badgePay"></b></button>
+      <button class="nav" data-view="users">Users</button>
+      <button class="nav" data-view="q">Questions</button>
+      <button class="nav" data-view="mat">PDF Notes</button>
+      <button class="nav" data-view="qr">Payment QR</button>
+    </nav>
+    <button id="aLogout" class="ghost">Logout</button>
+  </aside>
+
+  <main class="content">
+    <p id="aNote" class="note hidden"></p>
+
+    <section id="v-ov" class="view">
+      <h2>Overview</h2>
+      <div class="stats">
+        <div class="stat"><span id="stTotal">0</span><small>Total users</small></div>
+        <div class="stat"><span id="stActive">0</span><small>Active subscription</small></div>
+        <div class="stat"><span id="stPending">0</span><small>Pending payment</small></div>
+        <div class="stat"><span id="stMat">0</span><small>PDF notes</small></div>
+      </div>
+      <div class="card"><h3>Sab chapters automatic bharein (har chapter 50 tak)</h3>
+        <p class="muted">AI free limit ke hisaab se dheere-dheere sawal banata hai. Ruk jaye to dobara "Shuru karein" dabayein, jahan ruka wahin se chalega. Server band hone par ruk sakta hai.</p>
+        <button id="fillStart">Shuru karein</button>
+        <button id="fillStop" class="ghost">Roko</button>
+        <p id="fillStatus" class="muted"></p>
+        <pre id="fillLog" class="logbox"></pre>
+      </div>
+      <div class="card table-wrap"><h3>Chapter-wise sawal (har chapter me kam se kam 50 hone chahiye)</h3><table id="covTable"></table></div>
+<div class="card"><h3>Admin password badlein</h3>
+        <label>Purana password</label><input id="pwCur" type="password">
+        <div class="row"><div><label>Naya password</label><input id="pwNew" type="password"></div>
+        <div><label>Confirm</label><input id="pwNew2" type="password"></div></div>
+        <button id="pwSave">Password update karein</button></div>
+    </section>
+
+    <section id="v-pay" class="view hidden">
+      <h2>Payments</h2>
+      <div class="card table-wrap"><table id="payTable"></table></div>
+    </section>
+
+    <section id="v-users" class="view hidden">
+      <h2>Users</h2>
+      <div class="row">
+        <input id="uSearch" placeholder="Naam, email ya number se dhundhein">
+        <select id="uFilter">
+          <option value="all">Sab users</option>
+          <option value="active">Subscription wale</option>
+          <option value="none">Subscription nahi liya</option>
+        </select>
+      </div>
+      <div class="card table-wrap"><table id="userTable"></table></div>
+    </section>
+
+    <section id="v-q" class="view hidden">
+      <h2>Sawal add karein</h2>
+      <div class="card">
+        <div class="row">
+          <div><label>Subject</label><select id="qSubject"></select></div>
+          <div><label>Chapter</label><input id="qChapter" list="chapList" placeholder="Chapter ka naam"><datalist id="chapList"></datalist></div>
+        </div>
+        <label>Sawal</label><textarea id="qText" rows="3"></textarea>
+        <div class="row">
+          <div><label>Option A</label><input id="o0"></div>
+          <div><label>Option B</label><input id="o1"></div>
+        </div>
+        <div class="row">
+          <div><label>Option C</label><input id="o2"></div>
+          <div><label>Option D</label><input id="o3"></div>
+        </div>
+        <label>Sahi option</label>
+        <select id="qAnswer"><option value="0">A</option><option value="1">B</option><option value="2">C</option><option value="3">D</option></select>
+        <label>Solution</label><textarea id="qSol" rows="2"></textarea>
+        <label>Shortcut trick</label><textarea id="qTrick" rows="2"></textarea>
+        <input type="hidden" id="qId"><button id="qSave">Sawal save karein</button><button id="qCancel" class="ghost hidden">Edit cancel</button>
+      </div>
+    </section>
+
+    <div class="card"><h3>AI se sawal banayein ya JSON se add karein</h3>
+        <p class="muted">Upar Subject aur Chapter chuniye. Duplicate sawal apne-aap skip ho jayenge. Odia subject ke sawal Odia me banenge.</p>
+        <div class="row">
+          <div><label>Kitne sawal (max 15 ek baar me)</label><input id="gCount" type="number" value="15" min="1" max="15"></div>
+          <div style="align-self:end"><button id="genBtn">AI se sawal banayein</button></div>
+        </div>
+        <label>Ya JSON array paste karein</label>
+        <textarea id="bulkText" rows="5" placeholder='[{"q":"...","options":["..","..","..",".."],"answer":0,"solution":"..","trick":".."}]'></textarea>
+        <button id="bulkBtn" class="ghost">JSON se add karein</button>
+      </div>
+      <div class="card table-wrap"><h3>Is subject ke sawal</h3><table id="qTable"></table></div>
+    </section>
+
+    <section id="v-mat" class="view hidden">
+      <h2>PDF notes upload</h2>
+      <div class="card">
+        <div class="row">
+          <div><label>Subject</label><select id="mSubject"></select></div>
+          <div><label>Chapter</label><input id="mChapter" list="chapList2" placeholder="Chapter ka naam"><datalist id="chapList2"></datalist></div>
+        </div>
+        <label>Title</label><input id="mTitle" placeholder="Jaise: Percentage notes">
+        <label>PDF file</label><input id="mFile" type="file" accept="application/pdf">
+        <button id="mSave">PDF upload karein</button>
+      </div>
+      <div class="card table-wrap"><table id="matTable"></table></div>
+    </section>
+
+    <section id="v-qr" class="view hidden">
+      <h2>Payment QR</h2>
+      <div class="card">
+        <p id="qrStatus" class="muted"></p>
+        <input id="qrFile" type="file" accept="image/png,image/jpeg,image/webp">
+        <button id="qrSave">QR upload karein</button>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+let D = null;
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]);
+const fmt = t => t ? new Date(t * (t > 1e12 ? 1 : 1000)).toLocaleString("hi-IN") : "-";
+const note = t => { $("aNote").textContent = t; $("aNote").classList.toggle("hidden", !t); };
+
+async function api(url, method = "GET", body, isForm = false) {
+  const opt = { method, headers: {} };
+  if (body) {
+    if (isForm) opt.body = body;
+    else { opt.headers["Content-Type"] = "application/json"; opt.body = JSON.stringify(body); }
+  }
+  const res = await fetch(url, opt);
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || "Kuch galat ho gaya");
+  return data;
+}
+
+$("aLoginBtn").onclick = async () => {
+  try { await api("/api/admin/login", "POST", { email: $("aEmail").value, password: $("aPass").value }); start(); }
+  catch (e) { $("aMsg").textContent = e.message; }
+};
+$("aLogout").onclick = async () => { await api("/api/admin/logout", "POST"); location.reload(); };
+
+document.querySelectorAll(".nav").forEach(b => b.onclick = () => {
+  document.querySelectorAll(".nav").forEach(x => x.classList.toggle("active", x === b));
+  document.querySelectorAll(".view").forEach(v => v.classList.toggle("hidden", v.id !== "v-" + b.dataset.view));
+});
+
+async function start() {
+  $("aLogin").classList.add("hidden"); $("aPanel").classList.remove("hidden");
+  await load();
+  const ch = await api("/api/admin/chapters?subject=" + encodeURIComponent($("qSubject").value)).catch(() => []);
+  fillChapters(ch);
+}
+
+async function load() {
+  D = await api("/api/admin/overview");
+  $("stTotal").textContent = D.total; $("stActive").textContent = D.active;
+  $("stPending").textContent = D.pending; $("stMat").textContent = D.materials.length;
+  $("badgePay").textContent = D.pending ? `(${D.pending})` : "";
+  const subjOpts = Object.entries(D.subjects).map(([k, v]) => `<option value="${esc(k)}">${esc(v)}</option>`).join("");
+  $("qSubject").innerHTML = subjOpts; $("mSubject").innerHTML = subjOpts;
+  renderPayments(); renderUsers(); renderMaterials(); renderCoverage();
+  $("qrStatus").textContent = D.qr_uploaded ? "QR upload ho chuka hai. Naya upload karke badal sakte hain." : "Abhi QR upload nahi hua hai.";
+}
+
+function fillChapters(list) {
+  const html = list.map(c => `<option value="${esc(c)}">`).join("");
+  $("chapList").innerHTML = html; $("chapList2").innerHTML = html;
+}
+$("qSubject").onchange = async () => fillChapters(await api("/api/admin/chapters?subject=" + encodeURIComponent($("qSubject").value)));
+
+function renderPayments() {
+  const rows = D.payments.map(p => `<tr>
+    <td>${fmt(p.created)}</td><td>${esc(p.name || "-")}<br><small>${esc(p.email || p.uid)}</small></td>
+    <td>${esc(p.plan)} · ₹${p.amount}</td><td><code>${esc(p.utr)}</code></td>
+    <td><span class="tag ${esc(p.status)}">${esc(p.status)}</span></td>
+    <td>${p.status === "pending"
+      ? `<button class="ok small" data-act="approve" data-id="${p.id}">Approve</button>
+         <button class="danger small" data-act="reject" data-id="${p.id}">Reject</button>` : ""}</td></tr>`).join("");
+  $("payTable").innerHTML = `<tr><th>Date</th><th>User</th><th>Plan</th><th>UTR</th><th>Status</th><th></th></tr>${rows || "<tr><td colspan=6>Koi payment nahi</td></tr>"}`;
+  document.querySelectorAll("[data-act]").forEach(b => b.onclick = async () => {
+    try { await api("/api/admin/payment/" + b.dataset.id, "POST", { action: b.dataset.act }); note("Payment " + b.dataset.act + " ho gaya."); load(); }
+    catch (e) { note(e.message); }
+  });
+}
+
+function renderUsers() {
+  const q = $("uSearch").value.toLowerCase(), f = $("uFilter").value;
+  const list = D.users.filter(u => (!q || [u.name, u.email, u.uid].some(x => String(x || "").toLowerCase().includes(q)))
+    && (f === "all" || (f === "active") === u.active));
+  const rows = list.map(u => `<tr><td>${esc(u.name || "-")}</td><td>${esc(u.email || "-")}</td>
+    <td>${esc(u.uid.startsWith("g:") ? "Google login" : u.uid)}</td>
+    <td>${u.active ? `<span class="tag approved">Active till ${fmt(u.until)}</span>` : `<span class="tag rejected">Subscription nahi</span>`}</td></tr>`).join("");
+  $("userTable").innerHTML = `<tr><th>Naam</th><th>Email</th><th>Number / Login</th><th>Subscription</th></tr>${rows || "<tr><td colspan=4>Koi user nahi</td></tr>"}`;
+}
+$("uSearch").oninput = renderUsers; $("uFilter").onchange = renderUsers;
+
+function renderMaterials() {
+  const rows = D.materials.map(m => `<tr><td>${esc(m.title)}</td><td>${esc(D.subjects[m.subject] || m.subject)}</td><td>${esc(m.chapter)}</td>
+    <td><button class="danger small" data-del="${m.id}">Delete</button></td></tr>`).join("");
+  $("matTable").innerHTML = `<tr><th>Title</th><th>Subject</th><th>Chapter</th><th></th></tr>${rows || "<tr><td colspan=4>Abhi koi PDF nahi</td></tr>"}`;
+  document.querySelectorAll("[data-del]").forEach(b => b.onclick = async () => {
+    if (!confirm("Ye PDF delete karein?")) return;
+    await api("/api/admin/material/" + b.dataset.del, "DELETE"); load();
+  });
+}
+
+$("qSave").onclick = async () => {
+  const body = { subject: $("qSubject").value, chapter: $("qChapter").value, q: $("qText").value,
+    options: [$("o0").value, $("o1").value, $("o2").value, $("o3").value], answer: Number($("qAnswer").value),
+    solution: $("qSol").value, trick: $("qTrick").value };
+  try {
+    await api("/api/admin/question", "POST", body);
+    note("Sawal save ho gaya.");
+    ["qText", "o0", "o1", "o2", "o3", "qSol", "qTrick"].forEach(id => $(id).value = "");
+    fillChapters(await api("/api/admin/chapters?subject=" + encodeURIComponent($("qSubject").value)));
+  } catch (e) { note(e.message); }
+};
+
+$("mSave").onclick = async () => {
+  const fd = new FormData();
+  fd.append("subject", $("mSubject").value); fd.append("chapter", $("mChapter").value);
+  fd.append("title", $("mTitle").value); fd.append("file", $("mFile").files[0]);
+  try { await api("/api/admin/material", "POST", fd, true); note("PDF upload ho gaya."); $("mFile").value = ""; $("mTitle").value = ""; load(); }
+  catch (e) { note(e.message); }
+};
+
+$("qrSave").onclick = async () => {
+  const fd = new FormData(); fd.append("file", $("qrFile").files[0]);
+  try { await api("/api/admin/qr", "POST", fd, true); note("QR upload ho gaya."); load(); }
+  catch (e) { note(e.message); }
+};
+
+(async () => {
+  try { await api("/api/admin/overview"); start(); } catch (e) { /* login dikhega */ }
+})();
+
+// ---- sawal list, edit, delete ----
+let qRows = [];
+async function loadQList() {
+  qRows = await api("/api/admin/questions?subject=" + encodeURIComponent($("qSubject").value));
+  $("qTable").innerHTML = `<tr><th>#</th><th>Chapter</th><th>Sawal</th><th></th></tr>` + (qRows.length
+    ? qRows.map((r, i) => `<tr><td>${i + 1}</td><td>${esc(r.chapter)}</td><td>${esc(r.q)}</td>
+        <td><button class="small ghost" data-qe="${r.id}">Edit</button>
+            <button class="small danger" data-qd="${r.id}">Delete</button></td></tr>`).join("")
+    : "<tr><td colspan=4>Is subject me sawal nahi hain</td></tr>");
+  document.querySelectorAll("[data-qe]").forEach(b => b.onclick = () => editQ(Number(b.dataset.qe)));
+  document.querySelectorAll("[data-qd]").forEach(b => b.onclick = () => delQ(Number(b.dataset.qd)));
+}
+function editQ(id) {
+  const r = qRows.find(x => x.id === id); if (!r) return;
+  $("qId").value = id; $("qChapter").value = r.chapter; $("qText").value = r.q;
+  [0, 1, 2, 3].forEach(i => $("o" + i).value = r.options[i]);
+  $("qAnswer").value = r.answer; $("qSol").value = r.solution; $("qTrick").value = r.trick;
+  $("qCancel").classList.remove("hidden"); $("qSave").textContent = "Update karein";
+  window.scrollTo(0, 0);
+}
+function resetQForm() {
+  $("qId").value = ""; ["qText", "o0", "o1", "o2", "o3", "qSol", "qTrick"].forEach(id => $(id).value = "");
+  $("qCancel").classList.add("hidden"); $("qSave").textContent = "Sawal save karein";
+}
+$("qCancel").onclick = resetQForm;
+async function delQ(id) {
+  if (!confirm("Ye sawal delete karein?")) return;
+  try { await api("/api/admin/question/" + id, "DELETE"); note("Sawal delete ho gaya."); loadQList(); }
+  catch (e) { note(e.message); }
+}
+$("qSave").onclick = async () => {
+  const body = { subject: $("qSubject").value, chapter: $("qChapter").value, q: $("qText").value,
+    options: [$("o0").value, $("o1").value, $("o2").value, $("o3").value], answer: Number($("qAnswer").value),
+    solution: $("qSol").value, trick: $("qTrick").value };
+  const id = $("qId").value;
+  try {
+    if (id) { await api("/api/admin/question/" + id, "PUT", body); note("Sawal update ho gaya."); }
+    else { await api("/api/admin/question", "POST", body); note("Sawal save ho gaya."); }
+    resetQForm();
+    fillChapters(await api("/api/admin/chapters?subject=" + encodeURIComponent($("qSubject").value)));
+    loadQList();
+  } catch (e) { note(e.message); }
+};
+const oldQChange = $("qSubject").onchange;
+$("qSubject").onchange = async () => { await oldQChange(); loadQList(); };
+document.querySelector('[data-view="q"]').addEventListener("click", () => loadQList());
+$("pwSave").onclick = async () => {
+  try {
+    await api("/api/admin/password", "POST", { current: $("pwCur").value, new: $("pwNew").value, confirm: $("pwNew2").value });
+    note("Admin password badal gaya.");
+    ["pwCur", "pwNew", "pwNew2"].forEach(i => $(i).value = "");
+  } catch (e) { note(e.message); }
+};
+</script>
+<script>
+function renderCoverage() {
+  const rows = (D.coverage || []).map(c => {
+    const ok = c.count >= 50;
+    return `<tr><td>${esc(D.subjects[c.subject] || c.subject)}</td><td>${esc(c.chapter)}</td><td>${c.count}</td>
+      <td><span class="tag ${ok ? "approved" : "pending"}">${ok ? "50+ ready" : "Kam hai: " + (50 - c.count) + " aur chahiye"}</span></td></tr>`;
+  }).join("");
+  $("covTable").innerHTML = `<tr><th>Subject</th><th>Chapter</th><th>Sawal</th><th>Status</th></tr>${rows || "<tr><td colspan=4>Abhi koi chapter nahi</td></tr>"}`;
+}
+$("genBtn").onclick = async () => {
+  try {
+    note("AI se sawal ban rahe hain, 30 second tak lag sakte hain...");
+    const d = await api("/api/admin/generate", "POST", { subject: $("qSubject").value, chapter: $("qChapter").value, count: Number($("gCount").value) });
+    note(`${d.added} naye sawal add hue, ${d.skipped} duplicate ya galat the.`);
+    await load(); loadQList();
+  } catch (e) { note(e.message); }
+};
+$("bulkBtn").onclick = async () => {
+  let items;
+  try { items = JSON.parse($("bulkText").value); } catch (e) { note("JSON sahi nahi hai"); return; }
+  try {
+    const d = await api("/api/admin/questions/bulk", "POST", { subject: $("qSubject").value, chapter: $("qChapter").value, items });
+    note(`${d.added} sawal add hue, ${d.skipped} duplicate ya galat the.`);
+    $("bulkText").value = ""; await load(); loadQList();
+  } catch (e) { note(e.message); }
+};
+</script>
+
+<script>
+let fillTimer = null;
+async function pollFill() {
+  const s = await api("/api/admin/fill/status");
+  $("fillStatus").textContent = s.running ? "Chal raha hai: " + s.current : "Band hai. " + (s.current || "");
+  $("fillLog").textContent = s.log.join("\n");
+  if (s.running && !fillTimer) fillTimer = setInterval(pollFill, 5000);
+  if (!s.running && fillTimer) { clearInterval(fillTimer); fillTimer = null; load(); }
+}
+$("fillStart").onclick = async () => {
+  try { await api("/api/admin/fill/start", "POST"); note("Auto fill shuru ho gaya."); pollFill(); }
+  catch (e) { note(e.message); }
+};
+$("fillStop").onclick = async () => { await api("/api/admin/fill/stop", "POST"); note("Current chapter ke baad ruk jayega."); };
+document.querySelector('[data-view="ov"]').addEventListener("click", () => pollFill().catch(() => {}));
+pollFill().catch(() => {});
+</script>
+<script src="/static/guard.js"></script>
+</body>
+</html>
